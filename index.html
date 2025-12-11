@@ -5,88 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceOn - 가변형 매장 관리 시스템</title>
     <style>
-        /* [1. 보내주신 Login.aspx 스타일 원본] */
+        /* [1. Login.aspx 스타일 원본] */
         body { background-color: #f5f5f5; font-family: 'Malgun Gothic'; margin: 0; }
         
         .screen { display: none; min-height: 100vh; }
         .active { display: block; }
 
-        /* 로그인 전용 스타일 */
+        /* 로그인 스타일 */
         .login-wrapper { text-align: center; padding-top: 50px; }
         .login-box { background: white; width: 350px; margin: 0 auto; padding: 40px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .input-txt { width: 90%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
         .btn-login { width: 100%; padding: 12px; background-color: #0076BE; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
         .btn-join { width: 100%; padding: 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; }
 
-        /* [2. 대시보드 및 에디터 공통 스타일] */
+        /* [2. 공통 스타일] */
         .header { background: white; padding: 15px 30px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
         .header h2 { margin: 0; color: #0076BE; font-size: 20px; }
         
         .main-container { display: flex; padding: 20px; gap: 20px; max-width: 1200px; margin: 0 auto; justify-content: center; }
         .sidebar { width: 320px; background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; height: fit-content; text-align: left; }
         .map-area { background: #2c3e50; padding: 30px; border-radius: 10px; border: 1px solid #ddd; min-height: 500px; display: inline-block; }
-        .map-area.editor { background: white; } /* 에디터는 흰 배경 */
+        .map-area.editor { background: white; }
 
-        /* 버튼류 */
+        /* 버튼 */
         .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 13px; }
         .btn-blue { background-color: #3498db; }
         .btn-green { background-color: #27ae60; }
         .btn-red { background-color: #e74c3c; }
         .btn-gray { background-color: #7f8c8d; }
-        .btn-dash { background-color: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 4px; margin-left: 10px; cursor:pointer; }
 
-        /* [수정됨] 그리드 맵 스타일 - 표 깨짐 방지 */
+        /* 그리드 맵 (깨짐 방지 적용됨) */
         .tbl-map { 
-            display: table !important; /* 강제로 표 형식 유지 */
+            display: table !important; 
             margin: 0 auto; 
             border-spacing: 10px; 
             border-collapse: separate; 
         }
-        .tbl-map tr {
-            display: table-row !important; /* 강제로 행 유지 */
-        }
-        .tbl-map td {
-            display: table-cell !important; /* 강제로 셀 유지 */
-            vertical-align: middle;
-        }
+        .tbl-map tr { display: table-row !important; }
+        .tbl-map td { display: table-cell !important; vertical-align: middle; }
 
         .cell-btn { 
-            width: 90px; 
-            height: 90px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            color: white; 
-            font-weight: bold; 
-            font-size: 13px; 
-            border-radius: 10px; 
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2); 
-            cursor: pointer; 
-            transition: 0.2s; 
-            user-select: none;
+            width: 90px; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 13px; border-radius: 10px; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2); cursor: pointer; transition: 0.2s; user-select: none;
         }
-        
         .cell-btn:hover { transform: scale(1.05); }
         .cell-empty { background-color: #ecf0f1; color: #bbb; border: 1px dashed #ccc; box-shadow: none; font-size: 20px; }
         
         /* 상태 스타일 */
         .wall { background-color: #34495e !important; opacity: 0.3; cursor: default !important; box-shadow: none; }
-        .occupied { border: 4px solid #e74c3c; animation: pulse 1.5s infinite; }
-        .waiting { opacity: 0.9; }
+        .occupied { border: 4px solid #e74c3c; animation: pulse 1.5s infinite; position: relative; }
+        .occupied::after { content: "⛔ 사용중"; font-size: 11px; margin-top: 5px; display: block; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
+        
+        .waiting { opacity: 0.9; position: relative; }
+        .waiting::after { content: "⭕ 대기"; font-size: 11px; margin-top: 5px; display: block; background: rgba(0,0,0,0.1); padding: 2px 5px; border-radius: 4px; }
 
         @keyframes pulse { 0% { border-color: #e74c3c; } 50% { border-color: #c0392b; transform: scale(0.98); } 100% { border-color: #e74c3c; } }
 
-        /* 필터 및 입력 */
+        /* 태그 필터 */
         .tag-area { margin-bottom: 20px; text-align: center; }
-        .btn-tag { background: white; border: 1px solid #0076BE; color: #0076BE; padding: 6px 15px; border-radius: 20px; margin: 5px; cursor: pointer; }
-        .btn-tag.active { background: #0076BE; color: white; font-weight: bold; }
+        .btn-tag { background: white; border: 1px solid #0076BE; color: #0076BE; padding: 6px 15px; border-radius: 20px; margin: 5px; cursor: pointer; transition: 0.2s; }
+        .btn-tag:hover, .btn-tag.active { background: #0076BE; color: white; font-weight: bold; }
         .highlight { transform: scale(1.1); box-shadow: 0 0 15px #f1c40f; z-index: 10; border: 2px solid #f1c40f; }
         .dimmed { opacity: 0.15; filter: grayscale(100%); pointer-events: none; }
 
         .input-full { width: 95%; padding: 8px; margin-bottom: 5px; border: 1px solid #ccc; border-radius: 4px; }
 
-        /* 모달 (팝업) */
+        /* 모달 */
         .modal-bg { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:none; z-index: 999; }
         .modal-box { background: white; color: black; width: 300px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 30px; border-radius: 10px; text-align: center; }
         .modal-info { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; }
@@ -99,8 +84,8 @@
             <h2 style="color:#0076BE;">SpaceOn System</h2>
             <p style="color:#666; font-size:14px;">매장 관리 시스템에 오신 것을 환영합니다.</p>
             <br />
-            <input type="text" id="txtID" class="input-txt" placeholder="아이디">
-            <input type="password" id="txtPW" class="input-txt" placeholder="비밀번호">
+            <input type="text" id="txtID" class="input-txt" placeholder="아이디" value="user">
+            <input type="password" id="txtPW" class="input-txt" placeholder="비밀번호" value="1234">
             <br /><br />
             <button class="btn-login" onclick="tryLogin()">로그인</button>
             <button class="btn-join" onclick="alert('가입 기능은 시뮬레이션입니다.')">회원가입</button>
@@ -112,9 +97,7 @@
 
     <div id="screen-admin-dash" class="screen">
         <div class="header">
-            <div>
-                <h2>🛠️ 관리자 운영 현황판 (Admin)</h2>
-            </div>
+            <div><h2>🛠️ 관리자 운영 현황판</h2></div>
             <div>
                 <button class="btn btn-green" onclick="goMapEditor()">🏗️ 맵 구조 편집</button>
                 <button class="btn btn-gray" onclick="logout()">로그아웃</button>
@@ -145,7 +128,6 @@
                 세로 <input type="number" id="mapCols" value="5" style="width:40px;">
                 <button class="btn btn-blue" onclick="resizeMap()">적용</button>
                 <hr style="margin:20px 0; border-top:1px dashed #ccc;">
-                
                 <h4>2. 방 종류 관리</h4>
                 <input type="text" id="newTypeName" class="input-full" placeholder="이름 (예: 굴방)">
                 <input type="number" id="newTypePrice" class="input-full" placeholder="가격 (3000)">
@@ -153,7 +135,6 @@
                 색상 <input type="color" id="newTypeColor" value="#3498db">
                 <button class="btn btn-green" onclick="addRoomType()" style="float:right;">등록</button>
                 <div id="typeList" style="margin-top:40px; max-height:200px; overflow-y:auto;"></div>
-                
                 <hr style="margin:20px 0; border-top:1px dashed #ccc;">
                 <h4>3. 배치 도구</h4>
                 <div id="toolList"></div>
@@ -177,6 +158,7 @@
             <div class="map-area">
                 <table class="tbl-map" id="userMap"></table>
             </div>
+            <p style="color:#666; font-size:13px; margin-top:10px;">* 원하는 방을 클릭하여 입실하세요. 내 방을 클릭하면 퇴실(결제)됩니다.</p>
         </div>
     </div>
 
@@ -190,14 +172,17 @@
     </div>
 
     <script>
-        // --- 데이터 관리 (LocalStorage) ---
         const DB = {
             config: { rows: 5, cols: 5 },
             types: [
                 { id: 1, name: '지우개', price: 0, color: '#ecf0f1', tags: '' },
-                { id: 2, name: '벽', price: 0, color: '#34495e', tags: '' }
+                { id: 2, name: '벽', price: 0, color: '#34495e', tags: '' },
+                // 초기 데모용 방 종류
+                { id: 3, name: '일반석', price: 2000, color: '#3498db', tags: '#가성비 #독서' },
+                { id: 4, name: '넷플릭스', price: 4000, color: '#e74c3c', tags: '#커플 #영화' },
+                { id: 5, name: '닌텐도', price: 3500, color: '#f1c40f', tags: '#게임 #친구' }
             ],
-            map: [], // {x, y, typeId, status, startTime, ownerId}
+            map: [], 
             currentUser: ''
         };
 
@@ -208,47 +193,79 @@
                 DB.types = loaded.types;
                 DB.map = loaded.map;
             } else {
-                initMapData(); // 최초 실행 시 초기화
+                initDemoData(); // 데모 데이터 로드
             }
-            renderTypes(); // 에디터용 리스트 미리 렌더링
+            renderTypes();
+            // 기본값 세팅
+            document.getElementById('mapRows').value = DB.config.rows;
+            document.getElementById('mapCols').value = DB.config.cols;
         };
 
-        function saveData() {
-            localStorage.setItem('spaceon_data', JSON.stringify(DB));
-        }
+        function saveData() { localStorage.setItem('spaceon_data', JSON.stringify(DB)); }
 
-        function initMapData() {
+        // [중요] 데모 데이터 초기화 함수 (예쁘게 배치)
+        function initDemoData() {
             DB.map = [];
-            for(let r=0; r<DB.config.rows; r++) {
-                for(let c=0; c<DB.config.cols; c++) {
+            // 5x5 빈 맵 생성
+            for(let r=0; r<5; r++) {
+                for(let c=0; c<5; c++) {
                     DB.map.push({ x:r, y:c, typeId:1, status:'Empty', startTime:null, ownerId:null });
                 }
             }
+
+            // 벽 배치 (테두리 느낌)
+            setCell(0,0,2); setCell(0,1,2); setCell(0,2,2); setCell(0,3,2); setCell(0,4,2); // 윗줄 벽
+            
+            // 넷플릭스 방 배치 (왼쪽)
+            setCell(1,0,4); 
+            setCell(2,0,4); 
+
+            // 일반석 배치 (중앙)
+            setCell(1,2,3); 
+            setCell(2,2,3);
+            setCell(3,2,3);
+
+            // 닌텐도 방 배치 (오른쪽)
+            setCell(1,4,5);
+            setCell(2,4,5);
+
+            // 상황 연출 1: 'user'가 이미 넷플릭스 방 사용중 (결제 테스트용)
+            let myRoom = DB.map.find(d => d.x === 1 && d.y === 0);
+            myRoom.status = 'Occupied';
+            myRoom.ownerId = 'user';
+            myRoom.startTime = Date.now() - (1000 * 60 * 45); // 45분 전 입실
+
+            // 상황 연출 2: 'guest'가 닌텐도 방 사용중 (접근 불가 테스트용)
+            let otherRoom = DB.map.find(d => d.x === 1 && d.y === 4);
+            otherRoom.status = 'Occupied';
+            otherRoom.ownerId = 'guest';
+            otherRoom.startTime = Date.now() - (1000 * 60 * 120); // 2시간 전 입실
+
             saveData();
         }
 
-        // --- 1. 로그인 로직 ---
+        function setCell(r, c, typeId) {
+            let cell = DB.map.find(d => d.x === r && d.y === c);
+            if(cell) cell.typeId = typeId;
+        }
+
+        // --- 로그인 및 화면 전환 ---
         function tryLogin() {
             const id = document.getElementById('txtID').value;
             const pw = document.getElementById('txtPW').value;
-            const msg = document.getElementById('lblMsg');
-
-            if(!id) { msg.innerText = "아이디를 입력하세요."; return; }
+            if(!id) { document.getElementById('lblMsg').innerText = "아이디를 입력하세요."; return; }
             
             DB.currentUser = id;
             document.getElementById('screen-login').classList.remove('active');
             
-            if(id === 'admin') {
-                goAdminDash();
-            } else {
+            if(id === 'admin') { goAdminDash(); }
+            else { 
                 document.getElementById('lblUser').innerText = id + "님";
-                goUserDash();
+                goUserDash(); 
             }
         }
-
         function logout() { location.reload(); }
 
-        // --- 화면 전환 ---
         function goAdminDash() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-admin-dash').classList.add('active');
@@ -257,30 +274,25 @@
         function goMapEditor() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-admin-editor').classList.add('active');
-            document.getElementById('mapRows').value = DB.config.rows;
-            document.getElementById('mapCols').value = DB.config.cols;
             renderEditorMap();
         }
         function goUserDash() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-user').classList.add('active');
-            renderUserMap();
-            renderTags();
+            renderUserMap(); renderTags();
         }
 
-        // --- 2. 관리자 현황판 (AdminDashboard.aspx 로직) ---
+        // --- 관리자 기능 ---
         function renderAdminDash() {
             const tbl = document.getElementById('adminDashMap');
             tbl.innerHTML = '';
             let occupiedCount = 0;
-
             for(let r=0; r<DB.config.rows; r++) {
                 let tr = document.createElement('tr');
                 for(let c=0; c<DB.config.cols; c++) {
                     let td = document.createElement('td');
                     let cell = DB.map.find(d => d.x === r && d.y === c);
                     let type = DB.types.find(t => t.id === cell.typeId);
-
                     td.className = 'cell-btn';
                     
                     if(type.id === 1) { td.style.visibility = 'hidden'; }
@@ -306,32 +318,19 @@
 
         function showAdminRoomInfo(cell, type) {
             const modal = document.getElementById('modal');
-            const title = document.getElementById('modalTitle');
             const info = document.getElementById('modalInfo');
             const btns = document.getElementById('modalButtons');
-
-            title.innerText = type.name;
+            document.getElementById('modalTitle').innerText = type.name;
             
             if(cell.status === 'Occupied') {
-                // C# 로직: 시간 차이 계산
                 const now = Date.now();
-                const start = cell.startTime;
-                const minutes = Math.floor((now - start) / 60000); // 밀리초 -> 분
-                const price = Math.floor((type.price / 60) * minutes); // 분당 가격 계산
-
-                // 시간 포맷팅
-                const dateObj = new Date(start);
+                const minutes = Math.floor((now - cell.startTime) / 60000);
+                const price = Math.floor((type.price / 60) * minutes);
+                const dateObj = new Date(cell.startTime);
                 const timeStr = dateObj.getHours() + ":" + (dateObj.getMinutes()<10?'0':'') + dateObj.getMinutes();
 
-                info.innerHTML = `
-                    <b>상태:</b> <span style="color:red">사용 중</span><br>
-                    <b>사용자:</b> ${cell.ownerId}<br>
-                    <b>입실 시간:</b> ${timeStr} (${minutes}분 경과)<br>
-                    <b>현재 요금:</b> ${price.toLocaleString()}원
-                `;
-                
-                // 강제 퇴실 버튼
-                btns.innerHTML = `<button class="btn btn-red" onclick="forceCheckout(${cell.x}, ${cell.y})">🚨 강제 퇴실 (초기화)</button>`;
+                info.innerHTML = `<b>상태:</b> 사용 중<br><b>사용자:</b> ${cell.ownerId}<br><b>입실:</b> ${timeStr} (${minutes}분)<br><b>요금:</b> ${price.toLocaleString()}원`;
+                btns.innerHTML = `<button class="btn btn-red" onclick="forceCheckout(${cell.x}, ${cell.y})">🚨 강제 퇴실</button>`;
             } else {
                 info.innerHTML = `<b>상태:</b> 대기 중<br><b>가격:</b> 시간당 ${type.price}원`;
                 btns.innerHTML = '';
@@ -340,24 +339,20 @@
         }
 
         function forceCheckout(x, y) {
-            if(confirm('정말 강제 퇴실 처리하시겠습니까?\n데이터가 초기화됩니다.')) {
+            if(confirm('강제 퇴실 처리하시겠습니까?')) {
                 let cell = DB.map.find(d => d.x === x && d.y === y);
-                cell.status = 'Empty';
-                cell.startTime = null;
-                cell.ownerId = null;
-                saveData();
-                closeModal();
-                renderAdminDash();
+                cell.status = 'Empty'; cell.startTime = null; cell.ownerId = null;
+                saveData(); closeModal(); renderAdminDash();
             }
         }
 
-        // --- 3. 맵 에디터 로직 ---
+        // --- 에디터 기능 ---
         function resizeMap() {
             const r = parseInt(document.getElementById('mapRows').value);
             const c = parseInt(document.getElementById('mapCols').value);
-            if(confirm('맵 크기를 변경하면 배치가 초기화됩니다.')) {
+            if(confirm('맵 크기를 변경하면 초기화됩니다.')) {
                 DB.config.rows = r; DB.config.cols = c;
-                initMapData(); renderEditorMap();
+                initDemoData(); renderEditorMap();
             }
         }
         function addRoomType() {
@@ -370,11 +365,9 @@
             saveData(); renderTypes();
         }
         function renderTypes() {
-            // 에디터 좌측 리스트 & 라디오버튼 렌더링
             const list = document.getElementById('typeList');
             const tools = document.getElementById('toolList');
             list.innerHTML = ''; tools.innerHTML = '';
-            
             DB.types.forEach((t, idx) => {
                 if(t.id > 2) {
                     list.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee;">
@@ -412,7 +405,7 @@
             }
         }
 
-        // --- 4. 사용자 대시보드 로직 ---
+        // --- 사용자 기능 ---
         function renderUserMap(filterTag) {
             const tbl = document.getElementById('userMap');
             tbl.innerHTML = '';
@@ -430,12 +423,16 @@
                         td.style.backgroundColor = type.color;
                         if(cell.status === 'Occupied') {
                             td.classList.add('occupied');
-                            td.innerHTML = type.name + "<br>⛔ 사용중";
+                            td.innerHTML = `${type.name}<br>⛔<br>사용중`;
+                            // 내 방인지 확인
+                            if(cell.ownerId === DB.currentUser) {
+                                td.innerHTML = `${type.name}<br>👤<br>내 방`;
+                                td.style.border = "4px solid #f1c40f"; // 내 방 강조
+                            }
                         } else {
                             td.classList.add('waiting');
-                            td.innerHTML = type.name + "<br>⭕ 대기";
+                            td.innerHTML = `${type.name}<br>⭕<br>대기`;
                         }
-                        
                         if(filterTag) {
                             if(type.tags.includes(filterTag)) td.classList.add('highlight');
                             else td.classList.add('dimmed');
@@ -450,10 +447,9 @@
 
         function userClickRoom(cell, type) {
             const modal = document.getElementById('modal');
-            const title = document.getElementById('modalTitle');
             const info = document.getElementById('modalInfo');
             const btns = document.getElementById('modalButtons');
-            title.innerText = type.name;
+            document.getElementById('modalTitle').innerText = type.name;
 
             if(cell.status === 'Empty') {
                 info.innerHTML = `가격: 시간당 ${type.price}원<br>옵션: ${type.tags}<br><br>입실하시겠습니까?`;
@@ -465,7 +461,7 @@
                     info.innerHTML = `이용 시간: ${minutes}분<br>결제 금액: ${cost}원<br><br>결제하고 퇴실하시겠습니까?`;
                     btns.innerHTML = `<button class="btn btn-red" onclick="checkOut(${cell.x}, ${cell.y})">결제 및 퇴실</button>`;
                 } else {
-                    info.innerHTML = `다른 손님이 이용 중입니다.`;
+                    info.innerHTML = `⛔ 다른 손님이 이용 중입니다.`;
                     btns.innerHTML = '';
                 }
             }
