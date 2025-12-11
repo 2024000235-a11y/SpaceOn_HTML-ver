@@ -35,13 +35,38 @@
         .btn-gray { background-color: #7f8c8d; }
         .btn-dash { background-color: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 4px; margin-left: 10px; cursor:pointer; }
 
-        /* 그리드 맵 */
-        .tbl-map { margin: 0 auto; border-spacing: 10px; border-collapse: separate; }
-        .cell-btn { 
-            width: 90px; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: white; font-weight: bold; font-size: 13px; border-radius: 10px; 
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2); cursor: pointer; transition: 0.2s; user-select: none;
+        /* [수정됨] 그리드 맵 스타일 - 표 깨짐 방지 */
+        .tbl-map { 
+            display: table !important; /* 강제로 표 형식 유지 */
+            margin: 0 auto; 
+            border-spacing: 10px; 
+            border-collapse: separate; 
         }
+        .tbl-map tr {
+            display: table-row !important; /* 강제로 행 유지 */
+        }
+        .tbl-map td {
+            display: table-cell !important; /* 강제로 셀 유지 */
+            vertical-align: middle;
+        }
+
+        .cell-btn { 
+            width: 90px; 
+            height: 90px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            color: white; 
+            font-weight: bold; 
+            font-size: 13px; 
+            border-radius: 10px; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2); 
+            cursor: pointer; 
+            transition: 0.2s; 
+            user-select: none;
+        }
+        
         .cell-btn:hover { transform: scale(1.05); }
         .cell-empty { background-color: #ecf0f1; color: #bbb; border: 1px dashed #ccc; box-shadow: none; font-size: 20px; }
         
@@ -345,7 +370,7 @@
             saveData(); renderTypes();
         }
         function renderTypes() {
-            // 에디터 좌측 리스트 & 라디오버튼 렌더링 (생략 - 이전과 동일)
+            // 에디터 좌측 리스트 & 라디오버튼 렌더링
             const list = document.getElementById('typeList');
             const tools = document.getElementById('toolList');
             list.innerHTML = ''; tools.innerHTML = '';
