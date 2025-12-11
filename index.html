@@ -97,15 +97,17 @@
 
     <div id="screen-admin-dash" class="screen">
         <div class="header">
-            <div><h2>🛠️ 관리자 운영 현황판</h2></div>
+            <div>
+                <h2>🛠️ 관리자 운영 현황판</h2>
+            </div>
             <div>
                 <button class="btn btn-green" onclick="goMapEditor()">🏗️ 맵 구조 편집</button>
                 <button class="btn btn-gray" onclick="logout()">로그아웃</button>
             </div>
         </div>
         <div class="main-container" style="display:block; text-align:center;">
-            <div style="margin-bottom:20px; color:white; font-size:18px;">
-                현재 사용 중인 방: <b style="color:#f1c40f; font-size:24px;" id="lblOccupiedCount">0</b>개
+            <div style="margin-bottom:20px; color:#333; font-size:18px; font-weight:bold;">
+                현재 사용 중인 방: <b style="color:#e74c3c; font-size:24px;" id="lblOccupiedCount">0</b>개
             </div>
             <div class="map-area">
                 <table class="tbl-map" id="adminDashMap"></table>
@@ -494,3 +496,4 @@
     </script>
 </body>
 </html>
+
