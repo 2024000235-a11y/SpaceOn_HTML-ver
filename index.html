@@ -5,101 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceOn - 가변형 매장 관리 시스템</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        /* [보내주신 Login.aspx 스타일 원본 반영] */
+        body { background-color: #f5f5f5; font-family: 'Malgun Gothic'; text-align: center; margin: 0; }
         
-        /* 화면 전환용 스타일 */
-        .screen { display: none; }
+        /* 화면 전환용 유틸리티 */
+        .screen { display: none; height: 100vh; overflow: auto; }
         .active { display: block; }
 
         /* 1. 로그인 화면 스타일 */
-        .login-box { 
-            width: 300px; margin: 100px auto; background: white; padding: 30px; 
-            border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; 
-        }
-        .login-input { width: 90%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        .btn-login { width: 100%; padding: 10px; background: #0076BE; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
-        /* 2. 공통 레이아웃 */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .container { display: flex; gap: 20px; }
+        .login-box { background: white; width: 350px; margin: 100px auto; padding: 40px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .input-txt { width: 90%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
+        .btn-login { width: 98%; padding: 12px; background-color: #0076BE; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
+        .btn-join { width: 98%; padding: 12px; background-color: #7f8c8d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        
+        /* 2. 메인 시스템 공통 레이아웃 */
+        .main-container { display: flex; padding: 20px; gap: 20px; text-align: left; max-width: 1200px; margin: 0 auto; }
         .sidebar { width: 320px; background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; height: fit-content; }
-        .map-area { flex: 1; background: white; padding: 30px; border-radius: 10px; border: 1px solid #ddd; min-height: 600px; text-align: center; }
+        .map-area { flex: 1; background: white; padding: 30px; border-radius: 10px; border: 1px solid #ddd; min-height: 600px; text-align: center; display: flex; justify-content: center; align-items: center; }
+        
+        .header { background: white; padding: 15px 30px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { margin: 0; color: #0076BE; }
 
-        /* 버튼 및 입력 스타일 */
-        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
+        /* 입력 및 버튼 스타일 */
+        .input-full { width: 95%; padding: 8px; margin-bottom: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        .input-half { width: 60px; padding: 5px; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
+        
+        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 14px; }
         .btn-blue { background-color: #3498db; }
         .btn-green { background-color: #27ae60; }
         .btn-red { background-color: #e74c3c; }
         .btn-gray { background-color: #7f8c8d; }
-        
-        .input-full { width: 92%; padding: 8px; margin-bottom: 5px; border: 1px solid #ccc; border-radius: 4px; }
-        
+
         /* 맵 그리드 스타일 */
-        .tbl-map { margin: 0 auto; border-spacing: 5px; border-collapse: separate; }
+        .tbl-map { border-spacing: 10px; border-collapse: separate; margin: auto; }
         .cell-btn { 
-            width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: bold; font-size: 12px; border-radius: 8px; 
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s;
-            flex-direction: column; line-height: 1.4;
+            width: 90px; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; font-weight: bold; font-size: 13px; border-radius: 10px; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s; user-select: none;
         }
         .cell-btn:hover { transform: scale(1.05); }
-        .cell-empty { background-color: #ecf0f1; color: #ccc; font-size: 20px; }
+        .cell-empty { background-color: #ecf0f1; color: #bbb; border: 1px dashed #ccc; box-shadow: none; font-size: 20px; }
         
-        /* 사용자 모드 스타일 */
-        .tag-area { text-align: center; margin-bottom: 20px; }
-        .btn-tag { background: white; border: 1px solid #0076BE; color: #0076BE; padding: 5px 15px; border-radius: 20px; margin: 5px; cursor: pointer; }
-        .btn-tag.active { background: #0076BE; color: white; }
-        
-        .highlight { border: 4px solid #f1c40f; transform: scale(1.1); z-index: 10; }
-        .dimmed { opacity: 0.2; pointer-events: none; }
-        .occupied { border: 4px solid #e74c3c; animation: pulse 1.5s infinite; }
-        
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        /* 사용자 상태 스타일 */
+        .occupied { border: 4px solid #e74c3c; animation: pulse 1.5s infinite; position: relative; }
+        .occupied::after { content: "⛔ 사용중"; font-size: 11px; margin-top: 5px; display: block; background: rgba(0,0,0,0.2); padding: 2px 5px; border-radius: 4px; }
+        .waiting { opacity: 0.9; }
+        .waiting::after { content: "⭕ 대기"; font-size: 11px; margin-top: 5px; display: block; background: rgba(0,0,0,0.1); padding: 2px 5px; border-radius: 4px; }
 
-        /* 리스트 스타일 */
-        .room-list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; }
+        @keyframes pulse { 0% { border-color: #e74c3c; } 50% { border-color: #c0392b; transform: scale(0.98); } 100% { border-color: #e74c3c; } }
+
+        /* 태그 필터 스타일 */
+        .tag-area { margin-bottom: 20px; text-align: center; }
+        .btn-tag { background: white; border: 1px solid #0076BE; color: #0076BE; padding: 6px 15px; border-radius: 20px; margin: 5px; cursor: pointer; transition: 0.2s; }
+        .btn-tag:hover, .btn-tag.active { background: #0076BE; color: white; font-weight: bold; }
+        .highlight { transform: scale(1.1); box-shadow: 0 0 15px #f1c40f; z-index: 10; border: 2px solid #f1c40f; }
+        .dimmed { opacity: 0.15; filter: grayscale(100%); pointer-events: none; }
+
+        /* 방 종류 리스트 */
+        .type-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 8px; border-bottom: 1px solid #eee; margin-bottom: 5px; font-size: 13px; border-radius: 4px; }
+        .color-box { display: inline-block; width: 15px; height: 15px; border-radius: 3px; margin-right: 5px; vertical-align: middle; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
 
     <div id="screen-login" class="screen active">
         <div class="login-box">
-            <h2 style="color:#0076BE;">SpaceOn</h2>
-            <p style="color:#666; font-size:12px;">가변형 매장 관리 시스템</p>
-            <input type="text" id="loginID" class="login-input" placeholder="아이디 (admin 또는 user)">
-            <input type="password" class="login-input" placeholder="비밀번호 (아무거나)">
-            <button class="btn-login" onclick="login()">로그인</button>
-            <p style="margin-top:10px; font-size:12px; color:#999;">* admin 입력 시 관리자모드<br>* 그 외 입력 시 사용자모드</p>
+            <h2 style="color:#0076BE;">SpaceOn System</h2>
+            <p style="color:#666; font-size:14px;">매장 관리 시스템에 오신 것을 환영합니다.</p>
+            <br />
+            <input type="text" id="txtID" class="input-txt" placeholder="아이디">
+            <input type="password" id="txtPW" class="input-txt" placeholder="비밀번호">
+            <br /><br />
+            <button class="btn-login" onclick="tryLogin()">로그인</button>
+            <button class="btn-join" onclick="goJoin()">회원가입</button>
+            <br /><br />
+            <p id="lblMsg" style="color:red; font-size:13px; min-height:20px;"></p>
+            <p style="color:#999; font-size:12px; margin-top:20px;">* 포트폴리오 데모용 *<br>ID: <b>admin</b> (관리자) / <b>user</b> (사용자)</p>
+        </div>
+    </div>
+
+    <div id="screen-join" class="screen">
+        <div class="login-box">
+            <h2 style="color:#7f8c8d;">회원가입</h2>
+            <p style="color:#666; font-size:14px;">SpaceOn의 새로운 가족이 되어주세요.</p>
+            <br />
+            <input type="text" class="input-txt" placeholder="사용할 아이디">
+            <input type="password" class="input-txt" placeholder="비밀번호">
+            <input type="text" class="input-txt" placeholder="이름">
+            <br /><br />
+            <button class="btn-login" style="background-color:#27ae60;" onclick="doJoin()">가입하기</button>
+            <button class="btn-join" onclick="goLogin()">취소</button>
         </div>
     </div>
 
     <div id="screen-admin" class="screen">
         <div class="header">
-            <h3>🛠️ 관리자 모드 (Map Editor)</h3>
-            <button class="btn btn-gray" onclick="logout()">로그아웃</button>
-        </div>
-        <div class="container">
-            <div class="sidebar">
-                <h4>1. 맵 크기</h4>
-                가로 <input type="number" id="mapRows" value="4" style="width:40px;"> 
-                세로 <input type="number" id="mapCols" value="5" style="width:40px;">
-                <button class="btn btn-blue" onclick="resizeMap()">적용</button>
-                <hr>
-                <h4>2. 방 종류 추가</h4>
-                <input type="text" id="newTypeName" class="input-full" placeholder="이름 (예: 커플석)">
-                <input type="number" id="newTypePrice" class="input-full" placeholder="가격 (3000)">
-                <input type="text" id="newTypeTags" class="input-full" placeholder="#태그 (#커플 #게임)">
-                색상 <input type="color" id="newTypeColor" value="#3498db">
-                <button class="btn btn-green" style="width:100%; margin-top:5px;" onclick="addRoomType()">추가</button>
-                
-                <div id="typeList" style="margin-top:15px; max-height:200px; overflow-y:auto;">
-                    </div>
-
-                <hr>
-                <h4>3. 배치 도구 (선택 후 맵 클릭)</h4>
-                <div id="toolList">
-                    </div>
+            <div>
+                <h2>🛠️ 관리자 모드 (SpaceOn Admin)</h2>
+                <span style="font-size:12px; color:#666;">매장 구조 편집 및 운영 관리</span>
             </div>
+            <div>
+                <span id="adminName" style="margin-right:10px; font-weight:bold;">관리자님</span>
+                <button class="btn btn-gray" onclick="logout()">로그아웃</button>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="sidebar">
+                <h4 style="color:#2c3e50;">1. 맵 크기 설정</h4>
+                가로: <input type="number" id="mapRows" value="5" class="input-half"> 
+                세로: <input type="number" id="mapCols" value="5" class="input-half">
+                <button class="btn btn-blue" style="float:right;" onclick="resizeMap()">적용</button>
+                <div style="clear:both; margin-bottom:20px;"></div>
+                <hr style="border:0; border-top:1px dashed #ccc;">
+
+                <h4 style="color:#2c3e50;">2. 방 종류 관리</h4>
+                <div style="background:#eee; padding:10px; border-radius:5px;">
+                    <input type="text" id="newTypeName" class="input-full" placeholder="이름 (예: 넷플릭스룸)">
+                    <input type="number" id="newTypePrice" class="input-full" placeholder="가격 (예: 3000)">
+                    <input type="text" id="newTypeTags" class="input-full" placeholder="태그 (예: #커플 #영화)">
+                    <div style="margin-top:5px;">
+                        색상: <input type="color" id="newTypeColor" value="#3498db" style="vertical-align:middle;">
+                        <button class="btn btn-green" style="float:right; padding:5px 10px;" onclick="addRoomType()">생성</button>
+                    </div>
+                </div>
+                <div id="typeList" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
+
+                <hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;">
+
+                <h4 style="color:#2c3e50;">3. 배치 도구 (선택 후 맵 클릭)</h4>
+                <div id="toolList" style="font-size:14px;"></div>
+                
+                <hr style="border:0; border-top:1px dashed #ccc; margin:20px 0;">
+                <h4 style="color:#e74c3c;">4. 운영 관리</h4>
+                <p style="font-size:12px; color:#666;">사용 중인 방을 클릭하면<br><b>[강제 퇴실]</b> 시킬 수 있습니다.</p>
+            </div>
+
             <div class="map-area">
                 <table class="tbl-map" id="adminMapGrid"></table>
             </div>
@@ -108,81 +148,135 @@
 
     <div id="screen-user" class="screen">
         <div class="header">
-            <h3>📺 사용자 대시보드 (예약 시스템)</h3>
-            <button class="btn btn-gray" onclick="logout()">로그아웃</button>
-        </div>
-        
-        <div class="tag-area" id="tagButtons">
+            <div>
+                <h2>📺 SpaceOn 사용자 현황판</h2>
+                <span style="font-size:12px; color:#666;">실시간 좌석 확인 및 예약 시스템</span>
             </div>
+            <div>
+                <span id="userName" style="margin-right:10px; font-weight:bold;">사용자님</span>
+                <button class="btn btn-gray" onclick="logout()">로그아웃</button>
+            </div>
+        </div>
 
-        <div class="map-area" style="background-color:#2c3e50;">
-            <table class="tbl-map" id="userMapGrid"></table>
+        <div class="main-container" style="display:block; text-align:center;">
+            <div class="tag-area" id="tagButtons">
+                </div>
+
+            <div class="map-area" style="background-color:#2c3e50; display:inline-block; min-width:600px;">
+                <table class="tbl-map" id="userMapGrid"></table>
+            </div>
+            <p style="color:#666; font-size:13px; margin-top:10px;">* 원하는 방을 클릭하여 입실하세요. 내 방을 클릭하면 퇴실(결제)됩니다.</p>
         </div>
     </div>
 
     <script>
-        // --- 데이터 (DB 대용) ---
-        let mapConfig = { rows: 4, cols: 5 };
+        // --- [데이터 모델 (DB 대용)] ---
+        // 새로고침해도 데이터가 날아가지 않도록 localStorage 사용
+        const DB_KEY_CONFIG = 'spaceon_config';
+        const DB_KEY_TYPES = 'spaceon_types';
+        const DB_KEY_MAP = 'spaceon_map';
+
+        let mapConfig = { rows: 5, cols: 5 };
         let roomTypes = [
             { id: 1, name: '지우개', price: 0, color: '#ecf0f1', tags: '' },
             { id: 2, name: '벽', price: 0, color: '#34495e', tags: '' }
         ];
-        let mapData = []; // {x, y, typeId, status, startTime}
+        // 맵 데이터: { x, y, typeId, status, startTime, ownerId }
+        let mapData = []; 
+        let currentUser = ''; // 현재 로그인한 ID
 
-        // --- 초기화 ---
+        // --- [초기화 및 데이터 로드] ---
         window.onload = function() {
-            if(localStorage.getItem('spaceOn_types')) {
-                roomTypes = JSON.parse(localStorage.getItem('spaceOn_types'));
-                mapData = JSON.parse(localStorage.getItem('spaceOn_map'));
-                mapConfig = JSON.parse(localStorage.getItem('spaceOn_config'));
-            } else {
-                // 초기 데이터 생성
-                initMapData();
-            }
+            loadData();
+            // 데이터가 없으면 초기화
+            if (mapData.length === 0) initMapData();
             renderTypes();
+            // 화면 크기에 맞게 Admin Inputs 세팅
+            document.getElementById('mapRows').value = mapConfig.rows;
+            document.getElementById('mapCols').value = mapConfig.cols;
         };
+
+        function loadData() {
+            const storedConfig = localStorage.getItem(DB_KEY_CONFIG);
+            const storedTypes = localStorage.getItem(DB_KEY_TYPES);
+            const storedMap = localStorage.getItem(DB_KEY_MAP);
+
+            if (storedConfig) mapConfig = JSON.parse(storedConfig);
+            if (storedTypes) roomTypes = JSON.parse(storedTypes);
+            if (storedMap) mapData = JSON.parse(storedMap);
+        }
+
+        function saveData() {
+            localStorage.setItem(DB_KEY_CONFIG, JSON.stringify(mapConfig));
+            localStorage.setItem(DB_KEY_TYPES, JSON.stringify(roomTypes));
+            localStorage.setItem(DB_KEY_MAP, JSON.stringify(mapData));
+        }
 
         function initMapData() {
             mapData = [];
-            for(let r=0; r<mapConfig.rows; r++) {
-                for(let c=0; c<mapConfig.cols; c++) {
-                    mapData.push({ x:r, y:c, typeId: 1, status: 'Empty', startTime: null }); // 1=지우개
+            for (let r = 0; r < mapConfig.rows; r++) {
+                for (let c = 0; c < mapConfig.cols; c++) {
+                    mapData.push({ x: r, y: c, typeId: 1, status: 'Empty', startTime: null, ownerId: null });
                 }
             }
             saveData();
         }
 
-        function saveData() {
-            localStorage.setItem('spaceOn_types', JSON.stringify(roomTypes));
-            localStorage.setItem('spaceOn_map', JSON.stringify(mapData));
-            localStorage.setItem('spaceOn_config', JSON.stringify(mapConfig));
+        // --- [1. 화면 전환 및 로그인 로직] ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
         }
 
-        // --- 1. 로그인 로직 ---
-        function login() {
-            const id = document.getElementById('loginID').value;
-            document.getElementById('screen-login').classList.remove('active');
-            if(id === 'admin') {
-                document.getElementById('screen-admin').classList.add('active');
+        function tryLogin() {
+            const id = document.getElementById('txtID').value.trim();
+            const pw = document.getElementById('txtPW').value;
+            const msg = document.getElementById('lblMsg');
+
+            if (!id) {
+                msg.innerText = "아이디를 입력해주세요.";
+                return;
+            }
+
+            // 시뮬레이션 로직: admin이면 관리자, 그외는 사용자
+            currentUser = id;
+            msg.innerText = "";
+            
+            if (id === 'admin') {
+                document.getElementById('adminName').innerText = id + "님";
                 renderAdminMap();
                 renderTypes();
+                showScreen('screen-admin');
             } else {
-                document.getElementById('screen-user').classList.add('active');
+                document.getElementById('userName').innerText = id + "님";
                 renderUserMap();
                 renderTags();
+                showScreen('screen-user');
             }
         }
+
         function logout() {
-            location.reload();
+            currentUser = '';
+            document.getElementById('txtID').value = '';
+            document.getElementById('txtPW').value = '';
+            showScreen('screen-login');
         }
 
-        // --- 2. 관리자 로직 ---
+        function goJoin() { showScreen('screen-join'); }
+        function goLogin() { showScreen('screen-login'); }
+        function doJoin() {
+            alert('회원가입이 완료되었습니다!\n(시뮬레이션)');
+            goLogin();
+        }
+
+        // --- [2. 관리자 기능 (Map Editor)] ---
         function resizeMap() {
-            mapConfig.rows = parseInt(document.getElementById('mapRows').value);
-            mapConfig.cols = parseInt(document.getElementById('mapCols').value);
-            // 기존 데이터 유지하면서 크기 변경은 복잡하므로 초기화 (데모용)
-            if(confirm('맵 크기를 변경하면 배치가 초기화됩니다. 진행할까요?')) {
-                initMapData();
+            const r = parseInt(document.getElementById('mapRows').value);
+            const c = parseInt(document.getElementById('mapCols').value);
+            if (confirm(`맵 크기를 ${r}x${c}로 변경하시겠습니까?\n기존 배치는 초기화됩니다.`)) {
+                mapConfig.rows = r;
+                mapConfig.cols = c;
+                initMapData(); // 데이터 리셋
                 renderAdminMap();
             }
         }
@@ -192,134 +286,194 @@
             const price = document.getElementById('newTypePrice').value;
             const tags = document.getElementById('newTypeTags').value;
             const color = document.getElementById('newTypeColor').value;
-            
-            if(!name) return alert('이름을 입력하세요');
 
-            roomTypes.push({ id: Date.now(), name, price, color, tags });
+            if (!name || !price) { alert('이름과 가격을 입력해주세요.'); return; }
+
+            const newType = { id: Date.now(), name, price, color, tags };
+            roomTypes.push(newType);
             saveData();
-            renderTypes();
             
-            // 입력창 초기화
+            // 입력창 비우기
             document.getElementById('newTypeName').value = '';
             document.getElementById('newTypeTags').value = '';
-        }
-
-        function renderTypes() {
-            // 리스트 렌더링
-            const list = document.getElementById('typeList');
-            list.innerHTML = roomTypes.filter(t => t.id > 2).map(t => 
-                `<div class="room-list-item">
-                    <span><span style="color:${t.color}">■</span> ${t.name} (${t.price}원)</span>
-                    <button class="btn btn-red" style="font-size:10px; padding:2px 5px;" onclick="deleteType(${t.id})">삭제</button>
-                </div>`
-            ).join('');
-
-            // 라디오 버튼 렌더링
-            const tools = document.getElementById('toolList');
-            tools.innerHTML = roomTypes.map((t, idx) => 
-                `<div><input type="radio" name="tool" value="${t.id}" ${idx===0?'checked':''}> ${t.name}</div>`
-            ).join('');
+            
+            renderTypes();
         }
 
         function deleteType(id) {
-            if(confirm('삭제하시겠습니까? 배치된 방도 사라집니다.')) {
+            if (confirm('정말 삭제하시겠습니까?\n배치된 해당 방들도 모두 지우개로 변합니다.')) {
                 roomTypes = roomTypes.filter(t => t.id !== id);
-                // 맵에 배치된 것도 지우개로 변경
-                mapData.forEach(cell => { if(cell.typeId === id) cell.typeId = 1; });
+                // 맵 데이터에서도 해당 타입 제거
+                mapData.forEach(cell => { if (cell.typeId === id) cell.typeId = 1; });
                 saveData();
                 renderTypes();
                 renderAdminMap();
             }
         }
 
+        function renderTypes() {
+            // 1. 관리자용 리스트 렌더링
+            const list = document.getElementById('typeList');
+            list.innerHTML = roomTypes.filter(t => t.id > 2).map(t => `
+                <div class="type-item">
+                    <span>
+                        <span class="color-box" style="background:${t.color}"></span>
+                        <b>${t.name}</b> (${t.price}원) <br>
+                        <span style="color:#888; font-size:11px;">${t.tags}</span>
+                    </span>
+                    <button class="btn btn-red" style="padding:2px 6px; font-size:11px;" onclick="deleteType(${t.id})">삭제</button>
+                </div>
+            `).join('');
+
+            // 2. 관리자용 배치 도구 (라디오 버튼)
+            const tools = document.getElementById('toolList');
+            tools.innerHTML = roomTypes.map((t, idx) => `
+                <div style="margin-bottom:5px;">
+                    <label style="cursor:pointer;">
+                        <input type="radio" name="tool" value="${t.id}" ${idx===0?'checked':''}>
+                        <span class="color-box" style="background:${t.color}; width:12px; height:12px; border:1px solid #999;"></span>
+                        ${t.name}
+                    </label>
+                </div>
+            `).join('');
+        }
+
         function renderAdminMap() {
             const tbl = document.getElementById('adminMapGrid');
             tbl.innerHTML = '';
-            for(let r=0; r<mapConfig.rows; r++) {
+
+            for (let r = 0; r < mapConfig.rows; r++) {
                 let tr = document.createElement('tr');
-                for(let c=0; c<mapConfig.cols; c++) {
+                for (let c = 0; c < mapConfig.cols; c++) {
                     let td = document.createElement('td');
                     let cell = mapData.find(d => d.x === r && d.y === c);
                     let type = roomTypes.find(t => t.id === cell.typeId) || roomTypes[0];
-                    
+
                     td.className = 'cell-btn';
-                    if(type.id === 1) td.classList.add('cell-empty');
-                    else td.style.backgroundColor = type.color;
                     
-                    td.innerHTML = type.id === 1 ? '+' : type.name;
-                    td.onclick = () => onAdminCellClick(r, c);
+                    if (type.id === 1) { // 지우개(빈공간)
+                        td.classList.add('cell-empty');
+                        td.innerText = '+';
+                    } else {
+                        td.style.backgroundColor = type.color;
+                        td.innerText = type.name;
+                        // 사용중이면 표시
+                        if (cell.status === 'Occupied') {
+                            td.innerHTML += "<br>⛔<br><small>사용중</small>";
+                        }
+                    }
+
+                    // 클릭 시 배치 or 강제퇴실
+                    td.onclick = () => onAdminCellClick(r, c, cell);
                     tr.appendChild(td);
                 }
                 tbl.appendChild(tr);
             }
         }
 
-        function onAdminCellClick(r, c) {
-            const selected = document.querySelector('input[name="tool"]:checked');
-            if(!selected) return;
-            const typeId = parseInt(selected.value);
-            
-            // 데이터 업데이트
-            let cell = mapData.find(d => d.x === r && d.y === c);
-            cell.typeId = typeId;
-            saveData();
-            renderAdminMap();
+        function onAdminCellClick(r, c, cell) {
+            // 만약 사용 중인 방을 클릭했다면 -> 강제 퇴실 기능
+            if (cell.status === 'Occupied') {
+                if (confirm(`[관리자 권한]\n현재 ${cell.ownerId}님이 사용 중입니다.\n강제 퇴실 처리하시겠습니까?`)) {
+                    cell.status = 'Empty';
+                    cell.startTime = null;
+                    cell.ownerId = null;
+                    saveData();
+                    renderAdminMap();
+                    alert('강제 퇴실 처리되었습니다.');
+                }
+                return;
+            }
+
+            // 일반 배치 로직
+            const selectedTool = document.querySelector('input[name="tool"]:checked');
+            if (selectedTool) {
+                const typeId = parseInt(selectedTool.value);
+                cell.typeId = typeId;
+                // 배치 바뀌면 상태 초기화
+                cell.status = 'Empty'; 
+                cell.startTime = null;
+                cell.ownerId = null;
+                
+                saveData();
+                renderAdminMap();
+            }
         }
 
-        // --- 3. 사용자 로직 ---
+        // --- [3. 사용자 기능 (Dashboard)] ---
         function renderTags() {
-            // 배치된 방들의 태그만 수집
-            let tags = new Set();
+            const tags = new Set();
             mapData.forEach(cell => {
-                let type = roomTypes.find(t => t.id === cell.typeId);
-                if(type && type.tags) {
-                    type.tags.split(' ').forEach(tag => {
-                        if(tag.startsWith('#')) tags.add(tag);
-                    });
+                const type = roomTypes.find(t => t.id === cell.typeId);
+                if (type && type.tags) {
+                    type.tags.split(' ').forEach(tag => { if (tag.startsWith('#')) tags.add(tag); });
                 }
             });
 
             const area = document.getElementById('tagButtons');
-            area.innerHTML = `<button class="btn-tag" onclick="filterMap(null)">전체보기</button>`;
+            area.innerHTML = `<button class="btn-tag active" onclick="filterMap(this, null)">전체보기 🔄</button>`;
             tags.forEach(tag => {
-                area.innerHTML += `<button class="btn-tag" onclick="filterMap('${tag}')">${tag}</button>`;
+                area.innerHTML += `<button class="btn-tag" onclick="filterMap(this, '${tag}')">${tag}</button>`;
             });
+        }
+
+        function filterMap(btn, tag) {
+            // 버튼 스타일 활성화
+            document.querySelectorAll('.btn-tag').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            renderUserMap(tag);
         }
 
         function renderUserMap(filterTag = null) {
             const tbl = document.getElementById('userMapGrid');
             tbl.innerHTML = '';
-            for(let r=0; r<mapConfig.rows; r++) {
+
+            for (let r = 0; r < mapConfig.rows; r++) {
                 let tr = document.createElement('tr');
-                for(let c=0; c<mapConfig.cols; c++) {
+                for (let c = 0; c < mapConfig.cols; c++) {
                     let td = document.createElement('td');
                     let cell = mapData.find(d => d.x === r && d.y === c);
                     let type = roomTypes.find(t => t.id === cell.typeId);
-                    
+
                     td.className = 'cell-btn';
-                    
-                    // 지우개나 벽 처리
-                    if(type.id === 1) { 
-                        td.style.visibility = 'hidden'; 
-                    } else if(type.id === 2) { 
-                        td.style.backgroundColor = type.color; 
-                        td.style.opacity = 0.3; 
-                    } else {
-                        // 일반 방
+
+                    // 1. 지우개(1)는 숨김, 벽(2)은 불투명
+                    if (type.id === 1) {
+                        td.style.visibility = 'hidden';
+                    } else if (type.id === 2) {
                         td.style.backgroundColor = type.color;
-                        if(cell.status === 'Occupied') {
-                            td.innerHTML = `${type.name}<br>⛔ 사용중`;
-                            td.classList.add('occupied');
-                        } else {
-                            td.innerHTML = `${type.name}<br>⭕ 대기`;
-                        }
+                        td.style.opacity = 0.3;
+                        td.style.cursor = 'default';
+                    } else {
+                        // 2. 일반 방
+                        td.style.backgroundColor = type.color;
                         
-                        // 필터링
-                        if(filterTag) {
-                            if(type.tags && type.tags.includes(filterTag)) td.classList.add('highlight');
-                            else td.classList.add('dimmed');
+                        // 3. 상태 표시
+                        if (cell.status === 'Occupied') {
+                            td.classList.add('occupied');
+                            td.classList.remove('waiting');
+                            // 내 방이면 표시
+                            if (cell.ownerId === currentUser) {
+                                td.innerHTML = `${type.name}<br>👤 <b>나의 방</b>`;
+                            } else {
+                                td.innerHTML = `${type.name}`; // 남의 방은 내용 간소화
+                            }
+                        } else {
+                            td.classList.add('waiting');
+                            td.innerHTML = `${type.name}`;
                         }
 
+                        // 4. 태그 필터링 (Dimmed 처리)
+                        if (filterTag) {
+                            if (type.tags && type.tags.includes(filterTag)) {
+                                td.classList.add('highlight');
+                            } else {
+                                td.classList.add('dimmed');
+                            }
+                        }
+
+                        // 클릭 이벤트
                         td.onclick = () => onUserCellClick(cell, type);
                     }
                     tr.appendChild(td);
@@ -328,32 +482,44 @@
             }
         }
 
-        function filterMap(tag) {
-            renderUserMap(tag);
-        }
-
         function onUserCellClick(cell, type) {
-            if(type.id <= 2) return; // 지우개, 벽 무시
+            if (type.id <= 2) return; // 지우개, 벽 무시
 
-            if(cell.status === 'Empty') {
-                if(confirm(`[${type.name}]\n가격: 시간당 ${type.price}원\n\n입실하시겠습니까?`)) {
+            // 1. 빈 방일 때 -> 입실
+            if (cell.status === 'Empty') {
+                const confirmMsg = `[${type.name}]\n가격: 시간당 ${type.price}원\n옵션: ${type.tags}\n\n입실하시겠습니까?`;
+                if (confirm(confirmMsg)) {
                     cell.status = 'Occupied';
                     cell.startTime = Date.now();
+                    cell.ownerId = currentUser;
                     saveData();
                     renderUserMap();
+                    alert('입실 완료! 즐거운 시간 되세요.');
                 }
-            } else {
-                // 퇴실 (가상 결제)
-                let minutes = Math.floor((Date.now() - cell.startTime) / 60000); // 분 단위
-                if(minutes < 1) minutes = 1; // 최소 1분
-                let cost = Math.floor((type.price / 60) * minutes);
-                
-                if(confirm(`[퇴실 및 결제]\n이용 시간: ${minutes}분\n결제 금액: ${cost}원\n\n결제하시겠습니까?`)) {
-                    cell.status = 'Empty';
-                    cell.startTime = null;
-                    saveData();
-                    alert('결제가 완료되었습니다.');
-                    renderUserMap();
+            } 
+            // 2. 사용 중일 때
+            else {
+                // 내 방일 때 -> 퇴실(결제)
+                if (cell.ownerId === currentUser) {
+                    const now = Date.now();
+                    let minutes = Math.floor((now - cell.startTime) / 60000);
+                    if (minutes < 1) minutes = 1; // 최소 1분 요금
+                    
+                    const cost = Math.floor((type.price / 60) * minutes);
+                    
+                    const payMsg = `[퇴실 및 결제]\n이용 시간: ${minutes}분\n결제 금액: ${cost}원\n\n결제하시겠습니까?`;
+                    if (confirm(payMsg)) {
+                        cell.status = 'Empty';
+                        cell.startTime = null;
+                        cell.ownerId = null;
+                        saveData();
+                        renderUserMap();
+                        alert(`결제가 완료되었습니다. (${cost}원)`);
+                    }
+                } 
+                // 남의 방일 때 -> 거절
+                else {
+                    alert('⛔ 다른 손님이 이용 중인 방입니다.');
                 }
             }
         }
